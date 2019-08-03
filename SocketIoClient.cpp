@@ -30,6 +30,7 @@ void SocketIoClient::webSocketEvent(WStype_t type, uint8_t * payload, size_t len
 	switch(type) {
 		case WStype_DISCONNECTED:
 			SOCKETIOCLIENT_DEBUG("[SIoC] Disconnected!\n");
+            trigger("disconnect", NULL, 0);
 			break;
 		case WStype_CONNECTED:
 			SOCKETIOCLIENT_DEBUG("[SIoC] Connected to url: %s\n",  payload);
@@ -124,7 +125,6 @@ void SocketIoClient::trigger(const char* event, const char * payload, size_t len
 void SocketIoClient::disconnect()
 {
 	_webSocket.disconnect();
-	trigger("disconnect", NULL, 0);
 }
 
 void SocketIoClient::setAuthorization(const char * user, const char * password) {
