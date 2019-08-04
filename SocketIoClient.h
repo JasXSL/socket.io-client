@@ -12,7 +12,7 @@
 #include <vector>
 #include <WebSocketsClient.h>
 
-#define PING_INTERVAL 10000 //TODO: use socket.io server response
+#define PING_INTERVAL 10000
 
 //#define SOCKETIOCLIENT_USE_SSL
 #ifdef SOCKETIOCLIENT_USE_SSL
