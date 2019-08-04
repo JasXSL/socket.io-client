@@ -14,12 +14,6 @@
 
 #define PING_INTERVAL 10000
 
-//#define SOCKETIOCLIENT_USE_SSL
-#ifdef SOCKETIOCLIENT_USE_SSL
-    #define SIO_PORT_DEFAULT 443
-#else
-    #define SIO_PORT_DEFAULT 80
-#endif
 #define DEFAULT_URL "/socket.io/?transport=websocket"
 
 
@@ -34,8 +28,8 @@ class SocketIoClient {
         void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
         void initialize();
     public:
-        void beginSSL(const char* host, const int port = SIO_PORT_DEFAULT, const char* url = DEFAULT_URL, const char* CA_cert = NULL);
-        void begin(const char* host, const int port = SIO_PORT_DEFAULT, const char* url = DEFAULT_URL);
+        void beginSSL(const char* host, const int port = 443, const char* url = DEFAULT_URL, const char* CA_cert = NULL);
+        void begin(const char* host, const int port = 80, const char* url = DEFAULT_URL);
         void loop();
         void on(const char* event, std::function<void (const char * payload, size_t length)>);
         void emit(const char* event, const char * payload = NULL);
