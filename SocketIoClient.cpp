@@ -6,6 +6,8 @@
 
 #include <SocketIoClient.h>
 
+static const char* TAG = "SIoC";
+
 const String getEventName(const String msg) {
     return msg.substring(4, msg.indexOf("\"",4));
 }
@@ -35,11 +37,11 @@ void SocketIoClient::webSocketEvent(WStype_t type, uint8_t * payload, size_t len
     String msg;
     switch(type) {
         case WStype_DISCONNECTED:
-            SOCKETIOCLIENT_DEBUG("[SIoC] Disconnected!\n");
+            ESP_LOGI(TAG, "disconnected!\n");
             trigger("disconnect", NULL, 0);
             break;
         case WStype_CONNECTED:
-            SOCKETIOCLIENT_DEBUG("[SIoC] Connected to url: %s\n",  payload);
+            ESP_LOGI(TAG, "connected to url: %s\n",  payload);
             break;
         case WStype_TEXT:
             msg = String((char*)payload);
@@ -53,22 +55,24 @@ void SocketIoClient::webSocketEvent(WStype_t type, uint8_t * payload, size_t len
                 trigger("disconnect", NULL, 0);
             }
             break;
+#if CORE_DEBUG_LEVEL >= 4
         case WStype_BIN:
-            SOCKETIOCLIENT_DEBUG("[SIoC] get binary length: %u\n", length);
+            ESP_LOGD(TAG, "get binary length: %u\n", length);
             hexdump((uint32_t*) payload, length);
+#endif
         break;
     }
 }
 
 void SocketIoClient::beginSSL(const char* host, const int port, const char* url, const char* CA_cert) {
-    SOCKETIOCLIENT_DEBUG("[SIoC] starting SSL socket: %s:%i, %s \n", host, port, url);
+    ESP_LOGI(TAG, "starting SSL socket: %s:%i, %s \n", host, port, url);
     _webSocket.beginSslWithCA(host, port, url, CA_cert);
 
     initialize();
 }
 
 void SocketIoClient::begin(const char* host, const int port, const char* url) {
-    SOCKETIOCLIENT_DEBUG("[SIoC] starting socket: %s:%i, %s \n", host, port, url);
+    ESP_LOGI(TAG, "starting socket: %s:%i, %s \n", host, port, url);
     _webSocket.begin(host, port, url);
     initialize();
 }
@@ -82,7 +86,7 @@ void SocketIoClient::loop() {
     _webSocket.loop();
     for(auto packet=_packets.begin(); packet != _packets.end();) {
         if(_webSocket.sendTXT(*packet)) {
-            SOCKETIOCLIENT_DEBUG("[SIoC] packet \"%s\" emitted\n", packet->c_str());
+            ESP_LOGD(TAG, "packet \"%s\" emitted\n", packet->c_str());
             packet = _packets.erase(packet);
         } else {
             ++packet;
@@ -108,7 +112,7 @@ void SocketIoClient::emit(const char* event, const char * payload) {
         msg += payload;
     }
     msg += "]";
-    SOCKETIOCLIENT_DEBUG("[SIoC] add packet %s\n", msg.c_str());
+    ESP_LOGD(TAG, "add packet %s\n", msg.c_str());
     _packets.push_back(msg);
 }
 
@@ -117,17 +121,17 @@ void SocketIoClient::remove(const char* event) {
     if(e != _events.end()) {
         _events.erase(e);
     } else {
-        SOCKETIOCLIENT_DEBUG("[SIoC] event %s not found, can not be removed", event);
+        ESP_LOGD(TAG, "event %s not found, can not be removed", event);
     }
 }
 
 void SocketIoClient::trigger(const char* event, const char * payload, size_t length) {
     auto e = _events.find(event);
     if(e != _events.end()) {
-        SOCKETIOCLIENT_DEBUG("[SIoC] trigger event %s\n", event);
+        ESP_LOGD(TAG, "trigger event %s\n", event);
         e->second(payload, length);
     } else {
-        SOCKETIOCLIENT_DEBUG("[SIoC] event %s not found. %d events available\n", event, _events.size());
+        ESP_LOGD(TAG, "event %s not found. %d events available\n", event, _events.size());
     }
 }
 

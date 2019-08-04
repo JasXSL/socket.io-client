@@ -12,12 +12,6 @@
 #include <vector>
 #include <WebSocketsClient.h>
 
-#ifndef NODEBUG_SOCKETIOCLIENT
-   #define SOCKETIOCLIENT_DEBUG(...) Serial.printf(__VA_ARGS__);
-#else
-   #define SOCKETIOCLIENT_DEBUG(...)
-#endif
-
 #define PING_INTERVAL 10000 //TODO: use socket.io server response
 
 //#define SOCKETIOCLIENT_USE_SSL
