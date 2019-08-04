@@ -1,3 +1,9 @@
+/*
+	Socket.io
+    
+    A fork of https://github.com/timum-viw/socket.io-client
+*/
+
 #include <SocketIoClient.h>
 
 const String getEventName(const String msg) {
@@ -54,12 +60,15 @@ void SocketIoClient::webSocketEvent(WStype_t type, uint8_t * payload, size_t len
 	}
 }
 
-void SocketIoClient::beginSSL(const char* host, const int port, const char* url, const char* fingerprint) {
-	_webSocket.beginSSL(host, port, url, fingerprint);
+void SocketIoClient::beginSSL(const char* host, const int port, const char* url, const char* CA_cert) {
+	SOCKETIOCLIENT_DEBUG("[SIoC] starting SSL socket: %s:%i, %s \n", host, port, url);
+	_webSocket.beginSslWithCA(host, port, url, CA_cert);
+
     initialize();
 }
 
 void SocketIoClient::begin(const char* host, const int port, const char* url) {
+	SOCKETIOCLIENT_DEBUG("[SIoC] starting socket: %s:%i, %s \n", host, port, url);
 	_webSocket.begin(host, port, url);
     initialize();
 }
