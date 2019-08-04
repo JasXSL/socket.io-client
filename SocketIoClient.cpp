@@ -7,8 +7,6 @@
 
 #include <SocketIoClient.h>
 
-static const char* TAG = "SIoC";
-
 const String getEventName(const String msg) {
     return msg.substring(4, msg.indexOf("\"",4));
 }
