@@ -12,7 +12,13 @@
 #include <vector>
 #include <WebSocketsClient.h>
 
-#define PING_INTERVAL 10000
+#if CORE_DEBUG_LEVEL >= 4
+   #define SOCKETIOCLIENT_DEBUG(...) Serial.printf(__VA_ARGS__);
+#else
+   #define SOCKETIOCLIENT_DEBUG(...)
+#endif
+
+#define PING_INTERVAL 10000 //TODO: use socket.io server response
 
 #define DEFAULT_URL "/socket.io/?transport=websocket"
 
@@ -27,9 +33,6 @@ class SocketIoClient {
         void trigger(const char* event, const char * payload, size_t length);
         void webSocketEvent(WStype_t type, uint8_t * payload, size_t length);
         void initialize();
-
-        static constexpr char* TAG = "SIoC";
-
     public:
         void beginSSL(const char* host, const int port = 443, const char* url = DEFAULT_URL, const char* CA_cert = NULL);
         void begin(const char* host, const int port = 80, const char* url = DEFAULT_URL);
